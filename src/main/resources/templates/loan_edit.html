@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="fragments.html :: head" />
+
+<body>
+
+	<!-- ======= Header ======= -->
+	<header th:replace="fragments.html :: header" />
+
+	<!-- ======= Sidebar ======= -->
+	<aside th:replace="fragments.html :: sidebar" />
+	<!-- End Sidebar-->
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Loan</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="${baseUrl}">Home</a></li>
+					<li class="breadcrumb-item active">Loan</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section loan">
+			
+				<div class="row">
+					<div class="col-lg-5">
+						<div class="card overflow-auto">
+							<div class="card-body">
+								<h5 class="card-title" th:switch="${loan.status.toString}">Loan Details
+									<span id="status" th:case="'PAID'" class="badge bg-success status" th:data-value="${loan.status.toString}">Paid</span>
+			                        <span id="status" th:case="'DRAFT'" class="badge bg-secondary status" th:data-value="${loan.status.toString}">Draft</span>
+			                        <span id="status" th:case="'PARTIAL'" class="badge bg-warning status" th:data-value="${loan.status.toString}">Partially Paid</span>
+			                        <span id="status" th:case="'TO_PAY'" class="badge bg-warning status" th:data-value="${loan.status.toString}">To Pay</span>
+			                        <span id="status" th:case="'DUE'" class="badge bg-danger status" th:data-value="${loan.status.toString}">Due</span>
+			                        <span id="status" th:case="'CANCELLED'" class="badge bg-cancelled status" th:data-value="${loan.status.toString}">Cancelled</span>
+			                    </h5>
+								<span id="loanId" th:text="${loan.id}" class="hidden"/>
+								<div>
+									<span id="createdDate" th:text="${#dates.format(loan.dateCreated, 'MM/dd/yyyy HH:mm:ss')}" class="hidden"/>
+									<span id="clientId" th:text="${loan.client != null ? loan.client.id : ''}" class="hidden"/>
+									<span id="continuedFrom" th:text="${loan.continuedFrom}" class="hidden"/>
+									<span id="continueTo" th:text="${loan.continueTo}" class="hidden"/>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Code</label>
+					                	<div class="col-sm-9">
+					                    	<span id="code" th:text="${loan.code}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Client</label>
+					                	<div class="col-sm-9">
+					                		<div class="input-group">
+						                    	<span id="clientName" th:text="${loan.client != null ? loan.client.name : ''}" class="form-control"/>
+												<button id="btnClientSearch" class="btn btn-outline-secondary bi bi-search"/>
+											</div>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Loan Amount</label>
+					                	<div class="col-sm-9">
+					                    	<input id="loanAmount" type="number" th:value="${loan.loanAmount}" class="form-control decimal required"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Loan Date</label>
+					                	<div class="col-sm-9">
+					                    	<input id="loanDate" type="date" th:value="${#dates.format(loan.dateLoaned, 'yyyy-MM-dd')}" class="form-control required"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Start Date</label>
+					                	<div class="col-sm-9">
+					                    	<input id="startDate" type="date" th:value="${#dates.format(loan.dateStart, 'yyyy-MM-dd')}" class="form-control required"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">End Date</label>
+					                	<div class="col-sm-9">
+					                    	<input id="endDate" type="date" th:value="${#dates.format(loan.dateEnd, 'yyyy-MM-dd')}" class="form-control required"/>
+					                  	</div>
+					                </div>
+								</div>
+							</div>
+						</div>
+						<div class="card overflow-auto">
+							<div class="card-body">
+								<h5 class="card-title">Term</h5>
+								<div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Interest Type</label>
+					                	<div class="col-sm-9">
+					                    	<select id="termInterestType" class="form-select" th:field="${loan.term.interestType}">
+                        						<option th:each="type : ${T(com.lms.model.InterestType).values()}" th:value="${type}" th:text="${type.display}" th:data-value="${type.toString}" />
+                      						</select>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Frequency</label>
+					                	<div class="col-sm-9">
+					                    	<select id="termFrequency" class="form-select" th:field="${loan.term.frequency}">
+                        						<option th:each="frequency : ${T(com.lms.model.PaymentFrequency).values()}" th:value="${frequency}" th:text="${frequency.display}" th:data-value="${frequency.toString}" />
+                      						</select>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Payable In</label>
+					                	<div class="col-sm-9">
+					                    	<input id="termPayableIn" type="number" th:value="${loan.term.payableIn}" class="form-control required"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Interval</label>
+					                	<div class="col-sm-9">
+					                    	<input id="termInterval" type="number" th:value="${loan.term.interval}" class="form-control required"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Interest Rate</label>
+					                	<div class="col-sm-9">
+					                		<div class="input-group">
+						                    	<input id="termInterestRate" type="number" th:value="${loan.term.interestRateInt}" class="form-control percentage required"/>
+												<span class="input-group-text" style="background-color: #fff;">%</span>
+											</div>
+					                  	</div>
+					                </div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-7">
+						<div class="card overflow-auto payables">
+							<div class="card-body">
+								<h5 class="card-title">Payables</h5>
+								<table id="payablesTable" class="table table-borderless table-hover">
+                    				<thead>
+				                      <tr>
+				                        <th scope="col">Due Date</th>
+				                        <th scope="col">Principal</th>
+				                        <th scope="col">Interest</th>
+				                        <th scope="col">Status</th>
+				                      </tr>
+                    				</thead>
+				                    <tbody>
+				                      <tr th:each="payable: ${loan.payables}">
+				                        <td th:text="${#dates.format(payable.dateDue, 'MM/dd/yyyy')}" th:data-id="${payable.id}"/>
+				                        <td th:text="${#numbers.formatDecimal(payable.principal, 1, 'COMMA', 2, 'POINT')}" th:data-value="${payable.principal}"/>
+				                        <td th:text="${#numbers.formatDecimal(payable.interest, 1, 'COMMA', 2, 'POINT')}" th:data-value="${payable.interest}"/>
+				                        <td th:switch="${payable.status.toString}" th:data-status="${payable.status.toString}">
+				                        	<span th:case="'PAID'" class="badge bg-success">Paid</span>
+				                        	<span th:case="'PENDING'" class="badge bg-secondary">Pending</span>
+				                        	<span th:case="'TO_PAY'" class="badge bg-warning">To Pay</span>
+				                        	<span th:case="'DUE'" class="badge bg-danger">Due</span>
+				                        	<span th:case="'CANCELLED'" class="badge bg-cancelled">Cancelled</span>
+				                        </td>
+				                      </tr>
+				                    </tbody>
+				                    <tfoot>
+				                    	<tr>
+				                      	<td style="font-weight: bold;"></td>
+				                      	<td id="totalPrincipal" style="font-weight: bold;" th:text="${#numbers.formatDecimal(loan.totalPrincipal, 1, 'COMMA', 2, 'POINT')}"/>
+				                        <td id="totalInterest" style="font-weight: bold;" th:text="${#numbers.formatDecimal(loan.totalInterest, 1, 'COMMA', 2, 'POINT')}"/>
+				                      </tr>
+				                    </tfoot>
+                  				</table>
+								
+							</div>
+						</div>
+						<div style="float: left;">
+							<button th:if="${loan.continuedFrom == null}" id="btnDeleteLoan" class="btn btn-danger">Delete</button>
+						</div>
+						<div style="float: right;">
+							<button id="btnSaveLoan" class="btn btn-secondary">Save Draft</button>
+							<button id="btnConfirmSubmit" class="btn btn-success">Submit</button>
+						</div>
+					</div>
+				</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+	<div class="modal fade" id="clientModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Clients</h5>
+					<button type="button" class="btn-close"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="search-bar">
+                      <div class="search-form d-flex align-items-center">
+                        <input id="txtSearchClient" type="text" placeholder="Search" title="Enter search keyword">
+                        <button title="Search"><i class="bi bi-search"></i></button>
+                      </div>
+                    </div>
+                    <table id="clientTable" class="table table-borderless table-hover">
+	                    <thead>
+	                      <tr>
+	                        <th scope="col">Name</th>
+	                      </tr>
+	                    </thead>
+	                    <tbody>
+	                    </tbody>
+                  </table>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="payableModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Payable</h5>
+					<button type="button" class="btn-close"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<span id="payableRow" class="hidden"></span>
+					<div class="input-group mb-3">
+						<span class="input-group-text input-group-align">Due Date</span>
+						<input id="payableDueDate" type="date" class="form-control"/>
+					</div>
+					<div class="input-group mb-3">
+						<span class="input-group-text input-group-align">Principal</span>
+						<input id="payablePrincipal" type="number" class="form-control decimal"/>
+					</div>
+					<div class="input-group mb-3">
+						<span class="input-group-text input-group-align">Interest</span>
+						<input id="payableInterest" type="number" class="form-control decimal"/>
+					</div>
+					<div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button id="btnPayableSave" type="button" class="btn btn-primary">Save</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="confirmModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: #f8d7da;">
+					<h5 class="modal-title">Confirm Delete</h5>
+					<button type="button" class="btn-close"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-4">Are you sure you want to delete this record?</div>
+					<div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                      <button id="btnDelete" type="button" class="btn btn-danger">Yes</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="submitModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: #d1e7dd;">
+					<h5 class="modal-title">Confirm Submission</h5>
+					<button type="button" class="btn-close"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div th:text="${'You are about to submit Loan #' + loan.code + ', this action is irreversible. Proceed?'}" class="mb-4" />
+					<div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                      <button id="btnSubmitLoan" type="button" class="btn btn-success">Proceed</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ======= Footer ======= -->
+	<footer th:replace="fragments.html :: footer" />
+	<!-- End Footer -->
+	<script src="static/vendor/jquery/jquery.done-typing.js"></script>
+	<script src="static/js/loan_edit.js"></script>
+
+</body>
+
+</html>

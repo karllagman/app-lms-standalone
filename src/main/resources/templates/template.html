@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="fragments.html :: head" />
+
+<body>
+
+	<!-- ======= Header ======= -->
+	<header th:replace="fragments.html :: header" />
+
+	<!-- ======= Sidebar ======= -->
+	<aside th:replace="fragments.html :: sidebar" />
+	<!-- End Sidebar-->
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Dashboard</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="/">Home</a></li>
+					<li class="breadcrumb-item active">Dashboard</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+			<div class="row"></div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<footer th:replace="fragments.html :: footer" />
+	<!-- End Footer -->
+	<script src="static/js/dashboard.js"></script>
+
+
+</body>
+
+</html>

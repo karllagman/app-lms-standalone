@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="fragments.html :: head" />
+
+<body>
+
+	<!-- ======= Header ======= -->
+	<header th:replace="fragments.html :: header" />
+
+	<!-- ======= Sidebar ======= -->
+	<aside th:replace="fragments.html :: sidebar" />
+	<!-- End Sidebar-->
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Loan</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="${baseUrl}">Home</a></li>
+					<li class="breadcrumb-item active">Loan</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section loan">
+			<div class="row">
+				<div class="col-lg-5">
+						<div class="card overflow-auto">
+							<div class="card-body">
+								<h5 class="card-title" th:switch="${loan.status.toString}">Loan Details
+									<span id="status" th:case="'PAID'" class="badge bg-success status" th:data-value="${loan.status.toString}">Paid</span>
+			                        <span id="status" th:case="'DRAFT'" class="badge bg-secondary status" th:data-value="${loan.status.toString}">Draft</span>
+			                        <span id="status" th:case="'PARTIAL'" class="badge bg-warning status" th:data-value="${loan.status.toString}">Partially Paid</span>
+			                        <span id="status" th:case="'TO_PAY'" class="badge bg-warning status" th:data-value="${loan.status.toString}">To Pay</span>
+			                        <span id="status" th:case="'DUE'" class="badge bg-danger status" th:data-value="${loan.status.toString}">Due</span>
+			                        <span id="status" th:case="'CANCELLED'" class="badge bg-cancelled status" th:data-value="${loan.status.toString}">Cancelled</span>
+			                    </h5>
+								<span id="loanId" th:text="${loan.id}" class="hidden"/>
+								<div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Code</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${loan.code}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Client</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${loan.client != null ? loan.client.name : ''}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Loan Amount</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${#numbers.formatDecimal(loan.loanAmount, 1, 'COMMA', 2, 'POINT')}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Loan Date</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${#dates.format(loan.dateLoaned, 'MM/dd/yyyy')}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Start Date</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${#dates.format(loan.dateStart, 'MM/dd/yyyy')}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">End Date</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${#dates.format(loan.dateEnd, 'MM/dd/yyyy')}"/>
+					                  	</div>
+					                </div>
+								</div>
+								
+							</div>
+						</div>
+						<div class="card overflow-auto">
+							<div class="card-body">
+								<h5 class="card-title">Term</h5>
+		
+								<div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Interest Type</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${loan.term.interestType != null ? loan.term.interestType.display : ''}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Frequency</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${loan.term.frequency != null ? loan.term.frequency.display : ''}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Payable In</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${loan.term.payableIn}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Interval</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${loan.term.interval}"/>
+					                  	</div>
+					                </div>
+									<div class="row mb-3 align-items-center">
+					                	<label class="col-sm-3 col-form-label">Interest Rate</label>
+					                	<div class="col-sm-9">
+					                    	<span th:text="${loan.term.interestRateInt + ' %'}"/>
+					                  	</div>
+					                </div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-7">
+						<div class="card overflow-auto payables">
+							<div class="card-body">
+								<h5 class="card-title">Payables</h5>
+								<table id="payablesTable" class="table table-borderless">
+                    				<thead>
+				                      <tr>
+				                        <th scope="col">Due Date</th>
+				                        <th scope="col">Amount</th>
+				                        <th scope="col">Balance</th>
+				                        <th scope="col">Status</th>
+				                      </tr>
+                    				</thead>
+				                    <tbody>
+				                      <tr th:each="payable: ${loan.payables}">
+				                        <td th:text="${#dates.format(payable.dateDue, 'MM/dd/yyyy')}" th:data-id="${payable.id}"/>
+				                        <td th:text="${#numbers.formatDecimal(payable.total, 1, 'COMMA', 2, 'POINT')}"/>
+				                        <td th:text="${payable.balance > 0 ? #numbers.formatDecimal(payable.balance, 1, 'COMMA', 2, 'POINT') : '-'}"/>
+				                        <td th:switch="${payable.status.toString}" th:data-status="${payable.status.toString}">
+				                        	<span th:case="'PAID'" class="badge bg-success">Paid</span>
+				                        	<span th:case="'PENDING'" class="badge bg-secondary">Pending</span>
+				                        	<span th:case="'TO_PAY'" class="badge bg-warning">To Pay</span>
+				                        	<span th:case="'DUE'" class="badge bg-danger">Due</span>
+				                        	<span th:case="'CANCELLED'" class="badge bg-cancelled">Cancelled</span>
+				                        </td>
+				                      </tr>
+				                    </tbody>
+				                    <tfoot>
+				                    	<tr>
+				                      	<td style="font-weight: bold;"></td>
+				                      	<td style="font-weight: bold;" th:text="${#numbers.formatDecimal(loan.totalPrincipal + loan.totalInterest, 1, 'COMMA', 2, 'POINT')}"/>
+				                        <td style="font-weight: bold;" th:text="${loan.unpaidAmount > 0 ? #numbers.formatDecimal(loan.unpaidAmount, 1, 'COMMA', 2, 'POINT') : '-'}"/>
+				                      </tr>
+				                    </tfoot>
+                  				</table>
+								
+							</div>
+						</div>
+						<div th:if="${loan.status.toString == 'TO_PAY' || loan.status.toString == 'PARTIAL' || loan.status.toString == 'DUE'}" class="d-flex" style="margin-bottom: 30px;">
+							<span id="amountToPay" th:text="${loan.amountToPay}" class="hidden"/>
+							<button id="btnRenewLoan" class="btn btn-primary">Renew Loan</button>
+							<button id="btnCancelLoan" class="btn btn-danger ms-auto">Cancel Loan</button>
+							<button id="btnMakePayment" class="btn btn-success" style="margin-left: 4px;">Make Payment</button>
+						</div>
+						<div th:replace="fragments.html :: notes" />
+					</div>
+			</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+	
+	<div class="modal fade" id="paymentModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Payment</h5>
+					<button type="button" class="btn-close"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-floating mb-3">
+                      <input th:value="${loan.amountToPay}" type="number" class="form-control decimal" placeholder="Amount to Pay" id="paymentAmount"/>
+                      <label for="paymentAmount">Amount</label>
+                    </div>
+					<div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button id="btnPay" type="button" class="btn btn-success">Pay</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="cancelModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: #f8d7da;">
+					<h5 class="modal-title">Confirm Cancellation</h5>
+					<button type="button" class="btn-close"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div th:text="${'You are about to cancel Loan #' + loan.code + '. Proceed?'}" class="mb-4" />
+					<div class="modal-footer">
+                      <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+                      <button id="btnCancel" type="button" class="btn btn-danger">Proceed</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="confirmModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: #f8d7da;">
+					<h5 class="modal-title">Confirm Delete</h5>
+					<button type="button" class="btn-close"
+						data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-4">Are you sure you want to delete this record?</div>
+					<div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                      <button id="btnDelete" type="button" class="btn btn-danger">Yes</button>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>	
+	
+	<!-- ======= Footer ======= -->
+	<footer th:replace="fragments.html :: footer" />
+	<!-- End Footer -->
+	<script src="static/js/loan_view.js"></script>
+
+
+</body>
+
+</html>

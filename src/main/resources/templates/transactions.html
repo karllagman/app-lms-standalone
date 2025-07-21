@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="fragments.html :: head" />
+
+<body>
+
+	<!-- ======= Header ======= -->
+	<header th:replace="fragments.html :: header" />
+
+	<!-- ======= Sidebar ======= -->
+	<aside th:replace="fragments.html :: sidebar" />
+	<!-- End Sidebar-->
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Transactions</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="${baseUrl}">Home</a></li>
+					<li class="breadcrumb-item active">Transactions</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+			<div class="row">
+
+								<!-- Right side columns -->
+				<div class="col-lg-4">
+
+					<!-- Recent Activity -->
+					<div class="card">
+
+						<div class="card-body">
+							<h5 class="card-title">
+								Recent Transactions<span id="btnNewTransaction"
+									class="new-span bi bi-plus-square-fill" />
+							</h5>
+
+							<div class="activity">
+
+								<div th:each="transaction: ${details.recentTransactions}"
+									class="activity-item d-flex">
+									<span th:text="${transaction.date}" class="activite-label" />
+									<i
+										th:class="'bi bi-circle-fill activity-badge align-self-start ' + (${transaction.deposit} ? 'text-success' : 'text-danger')"></i>
+									<div class="activity-content">
+										<div class="activity-details">
+											<span class="activity-left" th:text="${transaction.customer}" /> 
+											<span class="activity-amount activity-right" th:text="${transaction.amount}" /> <br />
+											<span class="activity-additional activity-left" th:text="${transaction.loanCode}" />
+										    <span class="activity-additional activity-amount activity-right" th:text="${'Running Balance: ' + transaction.runningBalance}" />
+											
+										</div>
+									</div>
+								</div>
+								<!-- End activity item-->
+
+							</div>
+
+						</div>
+					</div>
+					<!-- End Recent Activity -->
+
+				</div>
+				<!-- End Right side columns -->
+
+			</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+	
+
+	<!-- ======= Footer ======= -->
+	<footer th:replace="fragments.html :: footer" />
+	<!-- End Footer -->
+	<script src="static/vendor/jquery/jquery.done-typing.js"></script>
+
+
+</body>
+
+</html>

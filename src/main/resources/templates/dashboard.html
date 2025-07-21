@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="fragments.html :: head" />
+
+<body>
+
+	<!-- ======= Header ======= -->
+	<header th:replace="fragments.html :: header" />
+
+	<!-- ======= Sidebar ======= -->
+	<aside th:replace="fragments.html :: sidebar" />
+	<!-- End Sidebar-->
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Dashboard</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="${baseUrl}">Home</a></li>
+					<li class="breadcrumb-item active">Dashboard</li>
+				</ol>
+			</nav>
+			<div class="all-filter" th:data-default-filter="${defaultFilter}">
+				<a class="icon" data-bs-toggle="dropdown" aria-expanded="false"><i
+					class="bx bxs-filter-alt"></i></a>
+				<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow"
+					style="">
+					<li class="dropdown-header text-start">
+						<h6>Filter</h6>
+					</li>
+					<li><a
+						th:class="${'dropdown-item' + (defaultFilter == 'OVERALL' ? ' active' : '')}"
+						data-filter="OVERALL">Overall</a></li>
+					<li><a
+						th:class="${'dropdown-item' + (defaultFilter == 'LAST_YEAR' ? ' active' : '')}"
+						data-filter="LAST_YEAR">Last Year</a></li>
+					<li><a
+						th:class="${'dropdown-item' + (defaultFilter == 'THIS_YEAR' ? ' active' : '')}"
+						data-filter="THIS_YEAR">This Year</a></li>
+					<li><input id="specifyYear" class="form-control" type="text"
+						placeholder="Specify Year"
+						style="margin: 5px 10px 0px 10px; width: 140px; font-size: 14px;"></li>
+				</ul>
+			</div>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-8">
+					<div class="row">
+
+						<!-- Sales Card -->
+						<div class="col-xxl-4 col-md-6">
+							<div class="card info-card sales-card">
+								<div class="card-body">
+									<h5 class="card-title">
+										Loaned Out <span class="card-year filterable"
+											th:text="${'| ' +  details.filterDisplay}"></span>
+									</h5>
+
+									<div class="d-flex align-items-center">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-cart"></i>
+										</div>
+										<div class="ps-3">
+											<h6 id="onLoan" th:text="${details.onLoan}" />
+											<span id="expectedReturn" th:text="${details.expectedReturn}"
+												class="text-success small pt-1 fw-bold" /> <span
+												id="expectedReturnText"
+												th:class="${'text-muted small pt-2 ps-1' + (details.expectedReturn != null ? '' : ' hidden')}">expected
+												return</span>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+						<!-- End Sales Card -->
+
+						<!-- Revenue Card -->
+						<div class="col-xxl-4 col-md-6">
+							<div class="card info-card revenue-card">
+
+								<div class="card-body">
+									<h5 class="card-title">
+										Interest <span class="card-year filterable"
+											th:text="${'| ' +  details.filterDisplay}"></span>
+									</h5>
+
+									<div class="d-flex align-items-center">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-cash-stack"></i>
+										</div>
+										<div class="ps-3">
+											<h6 id="interestGained" th:text="${details.interestGained}" />
+											<span id="interestIncreased"
+												th:text="${details.interestIncreased}"
+												class="text-success small pt-1 fw-bold" /> <span
+												id="interestIncreasedText"
+												th:class="${'text-muted small pt-2 ps-1' + (details.interestIncreased != null ? '' : ' hidden')}">gained
+												from investment</span>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+						<!-- End Revenue Card -->
+
+						<!-- Customers Card -->
+						<div class="col-xxl-4 col-xl-12">
+
+							<div class="card info-card customers-card">
+
+								<div class="card-body">
+									<h5 class="card-title">
+										Balance <span class="card-year">| Overall</span>
+									</h5>
+
+									<div class="d-flex align-items-center">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-bank"></i>
+										</div>
+										<div class="ps-3">
+											<h6 id="balance" th:text="${details.balance}" />
+											<span id="investment" th:text="${details.investment}"
+												class="text-success small pt-1 fw-bold" /> <span
+												id="investmentText"
+												th:class="${'text-muted small pt-2 ps-1' + (details.investment != null ? '' : ' hidden')}">investment</span>
+										</div>
+									</div>
+
+								</div>
+							</div>
+
+						</div>
+						<!-- End Customers Card -->
+
+						<!-- Recent Sales -->
+						<div class="col-12">
+							<div class="card recent-sales overflow-auto">
+
+								<div class="card-body">
+									<h5 class="card-title">
+										Loans<span id="btnNewLoan"
+											class="new-span bi bi-plus-square-fill" />
+									</h5>
+									<div class="search-bar">
+										<div class="search-form d-flex align-items-center">
+											<input id="txtSearch" type="text" placeholder="Search"
+												title="Enter search keyword">
+											<button title="Search">
+												<i class="bi bi-search"></i>
+											</button>
+										</div>
+									</div>
+									<div class="col-sm-3 search-status">
+										<select id="cboStatus" class="form-select"
+											th:field="${details.initialStatus}">
+											<option
+												th:each="status : ${T(com.lms.model.StatusView).values()}"
+												th:value="${status}" th:text="${status.display}" />
+										</select>
+									</div>
+
+									<table id="loanTable"
+										class="table table-borderless table-hover">
+										<thead>
+											<tr>
+												<th class="col-hide-on-mobile pointer" scope="col"
+													data-field="code">Code</th>
+												<th class="col-hide-on-mobile pointer" scope="col"
+													data-field="customer">Client</th>
+												<th class="col-show-on-mobile pointer" scope="col"
+													data-field="nickname">Client</th>
+												<th class="pointer" scope="col" data-field="dateDue">Due
+													Date</th>
+												<th class="pointer" scope="col" data-field="balance">Balance</th>
+												<th class="pointer" scope="col" data-field="status">Status</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="loan: ${details.loans}" th:data-id="${loan.id}">
+												<td class="col-hide-on-mobile" scope="row"
+													th:text="${loan.code}" />
+												<td class="col-hide-on-mobile" th:text="${loan.customer}" />
+												<td class="col-show-on-mobile" th:text="${loan.nickname}" />
+												<td th:text="${loan.dateDue}" />
+												<td
+													th:text="${#numbers.formatDecimal(loan.balance, 1, 'COMMA', 2, 'POINT')}" />
+												<td th:switch="${loan.status}"><span th:case="'PAID'"
+													class="badge bg-success">Paid</span> <span
+													th:case="'DRAFT'" class="badge bg-secondary">Draft</span> <span
+													th:case="'PARTIAL'" class="badge bg-warning">Partially
+														Paid</span> <span th:case="'TO_PAY'" class="badge bg-warning">To
+														Pay</span> <span th:case="'DUE'" class="badge bg-danger">Due</span>
+													<span th:case="'CANCELLED'" class="badge bg-cancelled">Cancelled</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<input id="pageCount" th:value="${details.loanPageCount}"
+										type="text" class="hidden" />
+									<div id="page-selection"></div>
+								</div>
+
+							</div>
+						</div>
+						<!-- End Recent Sales -->
+
+					</div>
+				</div>
+				<!-- End Left side columns -->
+
+				<!-- Right side columns -->
+				<div class="col-lg-4">
+
+					<!-- Recent Activity -->
+					<div class="card">
+
+						<div class="card-body">
+							<h5 class="card-title">
+								Recent Transactions <span class="card-year filterable"
+									th:text="${'| ' + details.filterDisplay}"></span><span
+									id="btnNewTransaction" class="new-span bi bi-plus-square-fill" />
+							</h5>
+
+							<div class="activity">
+
+								<div th:each="transaction: ${details.recentTransactions}"
+									class="activity-item d-flex">
+									<span th:text="${transaction.date}" class="activite-label" />
+									<i
+										th:class="'bi bi-circle-fill activity-badge align-self-start ' + (${transaction.deposit} ? 'text-success' : 'text-danger')"></i>
+									<div class="activity-content">
+										<div class="activity-details">
+											<span class="activity-left" th:text="${transaction.customer}" />
+											<span class="activity-amount activity-right"
+												th:text="${transaction.amount}" /> <br /> <span
+												class="activity-additional activity-left"
+												th:text="${transaction.loanCode}" /> <span
+												class="activity-additional activity-amount activity-right"
+												th:text="${'Running Balance: ' + transaction.runningBalance}" />
+
+										</div>
+									</div>
+								</div>
+								<!-- End activity item-->
+
+							</div>
+							<input id="transactionPageCount"
+								th:value="${details.transactionPageCount}" type="text"
+								class="hidden" />
+							<div id="transaction-page-selection" style="margin-top: 1rem;"></div>
+						</div>
+					</div>
+					<!-- End Recent Activity -->
+
+				</div>
+				<!-- End Right side columns -->
+
+			</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+	<div class="modal fade" id="transactionModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Account Entry</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<div class="form-check-inline">
+							<input id="radioDeposit" class="form-check-input" type="radio"
+								name="transactionsRadio" /> <label class="form-check-label"
+								for="radioDeposit" style="margin-left: 3px;"> Deposit </label>
+						</div>
+						<div class="form-check-inline">
+							<input id="radioWithdraw" class="form-check-input" type="radio"
+								name="transactionsRadio" /> <label class="form-check-label"
+								for="radioWithdraw" style="margin-left: 3px;"> Withdraw
+							</label>
+						</div>
+						<div class="form-check-inline" style="float:right;">
+							<input class="form-check-input" type="checkbox" id="checkInvestment"> <label class="form-check-label"
+								for="checkInvestment">Investment</label>
+						</div>
+					</div>
+					<div class="form-floating mb-3">
+						<input type="number" class="form-control decimal"
+							placeholder="Amount" id="transactionAmount" /> <label
+							for="paymentAmount">Amount</label>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary"
+							data-bs-dismiss="modal">Close</button>
+						<button id="btnProceed" type="button" class="btn btn-primary">Proceed</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ======= Footer ======= -->
+	<footer th:replace="fragments.html :: footer" />
+	<!-- End Footer -->
+	<script src="static/vendor/jquery/jquery.done-typing.js"></script>
+	<script src="static/js/dashboard.js"></script>
+
+
+</body>
+
+</html>
