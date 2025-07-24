@@ -1,6 +1,8 @@
 package com.lms.repository.mapper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,13 +33,13 @@ public abstract class LoanMapper implements EntityMapper<Loan, LoanEntity> {
 
 	@AfterMapping
 	void updateData(@MappingTarget LoanEntity entity, Loan loan) {
-		loan.setClient(null);
-		loan.setCode(null);
-		loan.setLoanAmount(null);
-		loan.setDateCreated(null);
-		loan.setDateStart(null);
-		loan.setDateDue(null);
-		loan.setStatus(null);
+//		loan.setClient(null);
+//		loan.setCode(null);
+//		loan.setLoanAmount(null);
+//		loan.setDateCreated(null);
+//		loan.setDateStart(null);
+//		loan.setDateDue(null);
+//		loan.setStatus(null);
 		if (entity.getPayableEntities() == null)
 			entity.setPayableEntities(new ArrayList<>());
 		entity.getPayableEntities().clear();
@@ -48,12 +50,12 @@ public abstract class LoanMapper implements EntityMapper<Loan, LoanEntity> {
 
 				entity.getPayableEntities().add(pe);
 
-				p.setPrincipal(0);
-				p.setInterest(0);
-				p.setPrincipalPaid(0);
-				p.setInterestPaid(0);
-				p.setDateDue(null);
-				p.setStatus(null);
+//				p.setPrincipal(0);
+//				p.setInterest(0); 	
+//				p.setPrincipalPaid(0);
+//				p.setInterestPaid(0);
+//				p.setDateDue(null);
+//				p.setStatus(null);
 			});
 		}
 		entity.setData(PojoUtils.toJsonBytes(loan));
@@ -77,7 +79,7 @@ public abstract class LoanMapper implements EntityMapper<Loan, LoanEntity> {
 		loan.setPayables(new ArrayList<>());
 		if (!ObjectUtils.isEmpty(source.getPayableEntities())) {
 			source.getPayableEntities().forEach(p -> {
-				loan.getPayables().add(Optional.ofNullable(findById(targetTemp, p.getId()))
+				loan.getPayables().add(Optional.ofNullable(findByDateDue(targetTemp, p.getDateDue()))
 						.map(pd -> payableMapper.toDto(pd, p)).orElse(payableMapper.toDto(p)));
 			});
 		}
@@ -86,6 +88,24 @@ public abstract class LoanMapper implements EntityMapper<Loan, LoanEntity> {
 				.ifPresent(list -> loan.setPayables(list.stream().sorted().collect(Collectors.toList())));
 
 		return loan;
+	}
+	
+	private Payable findByDateDue(List<Payable> source, Date date) {
+		return Optional.ofNullable(source)
+				.filter(l -> !ObjectUtils.isEmpty(l))
+				.map(l -> l.stream()
+						.filter(p -> {
+							Calendar cal1 = Calendar.getInstance();
+							Calendar cal2 = Calendar.getInstance();
+							cal1.setTime(p.getDateDue());
+							cal2.setTime(date);
+							return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+								   cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
+								   cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH);
+						})
+						.findFirst()
+						.orElse(null))
+				.orElse(null);
 	}
 
 	private Payable findById(List<Payable> source, Integer id) {

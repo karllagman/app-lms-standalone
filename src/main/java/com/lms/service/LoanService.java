@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.Predicate;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +45,7 @@ import com.lms.repository.model.SummaryView;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class LoanService extends AbstractCodedService<Loan, LoanEntity, Integer, CodeCounter> {
 
@@ -198,6 +200,19 @@ public class LoanService extends AbstractCodedService<Loan, LoanEntity, Integer,
 		return super.save(dto);
 	}
 
+//	public void savePayables(Loan loan) {
+//		loan.getPayables().forEach((p) -> {
+//			this.savePayable(loan.getId(), p);
+//		});
+//	}
+//
+//	private void savePayable(String loanId, Payable payable) {
+//		PayableEntity payableEntity = this.payableMapper.toEntity(payable);
+//		payableEntity.setLoanId(loanId);
+//		payableEntity = (PayableEntity) this.payableRepo.save(payableEntity);
+//		payable.setId(payableEntity.getId());
+//	}
+
 	public Loan cancelLoan(Payment payment) {
 		return Optional.ofNullable(payment).map(pay -> get(pay.getLoanId())).map(loan -> {
 			loan.setStatus(Status.CANCELLED);
@@ -338,7 +353,6 @@ public class LoanService extends AbstractCodedService<Loan, LoanEntity, Integer,
 			return renewed;
 		}).orElse(null);
 	}
-
 
 	@Override
 	public Class<Loan> getDtoClass() {
